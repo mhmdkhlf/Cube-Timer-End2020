@@ -1,4 +1,4 @@
-# Rubik-s-Cube-Speed-Solving-Program
+# Rubiks-Cube-Speed-Solving-Program
 
 This project is a Rubik's Cube Timer. I built it using Python and, I mainly used pygame for the user-interface (weird choice but, I like pygame), and I used Tkinter for a pop-up window, and I used matplotlib for some data visualization. 
 
