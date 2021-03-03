@@ -484,54 +484,6 @@ while True:
                     if isinstance(solve, tuple):
                         timed_solves.append(solve[0])
                 if len(timed_solves)>1:
-                    if cube==3:
-                    #display of graph customized for my 3x3 times
-                        #counter dictionary for charts
-                        counter = {
-                            'sub-7':0,
-                            'sub-8':0,
-                            'sub-9':0,
-                            'sub-10':0,
-                            'sub-11':0,
-                            'shambles':0,
-                            'DNF':0
-                            }
-                        #computing stats
-                        for solve in session_solves:
-                            if isinstance(solve, tuple):
-                                solve = solve[0]
-                            if solve == 'DNF':
-                                counter['DNF'] += 1
-                            elif solve >= 11:
-                                counter['shambles'] += 1
-                            elif int(solve) == 10:
-                                counter['sub-11'] += 1
-                            elif int(solve) == 9:
-                                counter['sub-10'] += 1
-                            elif int(solve) == 8:
-                                counter['sub-9'] += 1
-                            elif int(solve) == 7:
-                                counter['sub-8'] += 1
-                            else:
-                                counter['sub-7'] += 1
-                        #code to fill up the charts gradually
-                        categories = []
-                        count = []
-                        for category in counter.keys():
-                            if counter[category] != 0:
-                                categories.append(category)
-                                count.append(counter[category])
-                        # display of barchart
-                        plt.figure(figsize=(9, 6))
-                        plt.subplot(3,2,1)
-                        plt.ylabel('Number of Solves')
-                        plt.title('Session Solves Bar Chart')
-                        plt.bar(categories, count, width=0.7, color='deepskyblue',edgecolor='black', linewidth=2)
-                        plt.subplot(3,2,2)
-                        plt.title('Session Solves Pie Chart')
-                        plt.pie(count, labels=categories, radius = 1.1, autopct='%1.1f%%', shadow=True, startangle=90)
-                        #display of plot that displays no matter the puzzle
-                        plt.subplot(3,1,3)
                     plt.xlabel('Solve Number')
                     plt.ylabel('Solve Time (secs)')
                     plt.title('Session Solves Detailed Times')
