@@ -494,9 +494,7 @@ while True:
                     mean_line = [functions.session_mean(timed_solves)]*len(index_list)
                     plt.plot(index_list, timed_solves, linestyle='dashed', marker='o', markerfacecolor='blue', markersize=8)
                     plt.plot(index_list, mean_line)
-                    plt.legend(['y1 = Solve Times',
-                                'y2 = Session Mean'],
-                                loc= 'best')
+                    plt.legend(['y1 = Solve Times','y2 = Session Mean'],loc= 'best')
                     plt.grid()
                     plt.show(block=True) #plt.show(block=False) # plt.pause(3) # plt.close()
 
