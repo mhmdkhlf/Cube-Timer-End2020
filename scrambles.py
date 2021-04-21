@@ -148,6 +148,3 @@ def scramble(puzzle):
     else:
         scramble = _Megaminx()    
     return scramble
-
-if __name__ == '__main__':
-    print(*_5x5())
