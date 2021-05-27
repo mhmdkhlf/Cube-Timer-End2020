@@ -1,4 +1,4 @@
-# Rubiks-Cube-Timer (BAD CODE, finished by december 2020)
+# Rubiks-Cube-Timer-V1 (BAD CODE, finished by december 2020)
 
 This project is a Rubik's Cube Timer. I built it using Python and, I mainly used pygame for the user-interface (weird choice but, I like pygame), and I used Tkinter for a pop-up window, and I used matplotlib for some data visualization. 
 
