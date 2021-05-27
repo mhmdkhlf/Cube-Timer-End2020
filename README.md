@@ -11,6 +11,6 @@ This program includes:
 -data visualization/plotting of the solve times at the end of every session
 
 
-(disclaimer: really bad code. Wrote this project with little to no knowledge in object oriented programming. 
+This project's code is really bad. Wrote this project with little to no knowledge in object oriented programming. 
 This repository is just to show the first fully functioning version of the project. 
 I am refactoring the code of this project and will be storing the new version of the application in another repository)
