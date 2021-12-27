@@ -384,7 +384,7 @@ def main():
 					display_commands(draw_info)
 				if event.type == pygame.KEYUP and event.key == pygame.K_c:
 					display_start_menu(draw_info, puzzle)
-				if event.type == pygame.KEYDOWN and event.key == pygame.K_s: #start scrambling and solving
+				if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
 					scramble = display_new_scramble(draw_info, puzzle)
 					display_ready_label(draw_info, draw_info.WHITE)
 					display_solve_count(draw_info, session_solves)
@@ -407,7 +407,7 @@ def main():
 					scroll = 0
 					display_previous_solves(draw_info, session_solves, scroll)
 					location_in_app = LocationInApp.viewing_previous_solves
-				if event.type == pygame.KEYDOWN and event.key == pygame.K_s: #command to generate new scramble
+				if event.type == pygame.KEYDOWN and event.key == pygame.K_s:
 					scramble = display_new_scramble(draw_info, puzzle)
 					display_ready_label(draw_info, draw_info.WHITE)
 					display_solve_count(draw_info, session_solves)
@@ -563,6 +563,6 @@ def main():
 					location_in_app = LocationInApp.start_menu
 					display_start_menu(draw_info, puzzle)
 
-
+					
 if __name__ == '__main__':
     main()
