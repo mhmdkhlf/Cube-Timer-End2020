@@ -19,6 +19,7 @@ class DrawInformation:
 	LIGHT_BLUE = 50, 160, 220
 	LIGHT_RED = 255, 80, 80
 	ORANGE = 245, 120, 0
+
 	global directory
 	directory = os.path.dirname((os.path.dirname(os.path.realpath(__file__))+ os.path.sep + 'images' + os.path.sep))
 	puzzles = ('2x2', '3x3', '4x4', '5x5', 'megaminx')
@@ -51,18 +52,20 @@ def display_start_menu(draw_info, puzzle):
 def display_commands(draw_info):
     draw_info.screen.fill(draw_info.BLACK)
     commands = (
+		'For timer [SPACE]',
+  		'Generate New Scramble: [S]',
+		'View previous solves: [V]',
         'Continue To Next Solve: [ENTER]',
         '+2 Penalty: [2]',
         'DNF Penalty: [D]',
         'Delete Last Solve: [BACKSPACE]',
         'Change Time: [T]',
-        'Generate New Scramble: [S]',
         'End Session: [END]'
     )
-    font = draw_info.new_font(55)
+    font = draw_info.new_font(40)
     for command, counter in zip(commands, range(len(commands))):
         text = font.render(command, 1, draw_info.WHITE)
-        draw_info.screen.blit(text, (int(draw_info.width/2 - text.get_width()/2), counter*85+25))
+        draw_info.screen.blit(text, (int(draw_info.width/2 - text.get_width()/2), counter*60+35))
     pygame.display.update()
 
 def display_ready_label(draw_info, color):
@@ -193,10 +196,10 @@ def display_same_scramble(draw_info, puzzle, scrmbl):
 	elif puzzle == 'megaminx':
 		display_megaminx_scramble(draw_info, scramble=scrmbl)
 
-def display_solving(draw_info):
+def display_solving(draw_info, time):
     draw_info.screen.fill(draw_info.BLACK)
-    font = draw_info.new_font(110)
-    text = font.render(' Solving...', 1, draw_info.GREEN)
+    font = draw_info.new_font(140)
+    text = font.render('%.3f' % time, 1, draw_info.GREEN)
     draw_info.screen.blit(text, (int(draw_info.width/2 - text.get_width()/2), int(draw_info.height/2 - text.get_height()/2)))
     pygame.display.update()
 
@@ -251,6 +254,28 @@ def display_invalid_input(draw_info, error_message):
 	directions = 'press T to enter time again'
 	text = font.render(directions, 1, draw_info.WHITE)
 	draw_info.screen.blit(text,(int(draw_info.width/2 - text.get_width()/2), int(draw_info.height/2 - text.get_height()/2)+30))
+	pygame.display.update()
+
+def display_previous_solves(draw_info, session_solves, scroll):
+	draw_info.screen.fill(draw_info.BLACK)
+	font = draw_info.new_font(55)
+	title = font.render('Solves list', 1, draw_info.WHITE)
+	draw_info.screen.blit(title, (int(draw_info.width/2 - title.get_width()/2), 60))
+	pygame.draw.line(draw_info.screen, draw_info.WHITE,
+                  (int(draw_info.width/2 - title.get_width()/2), title.get_height()+60),
+                  (int(draw_info.width/2 - title.get_width()/2)+title.get_width(), title.get_height()+60), 3)
+	for num in range(scroll, session_solves.get_number_of_solves()+scroll):
+		if 150+40*(num-scroll) > draw_info.height:
+			break
+		solve_number = num+1
+		solve_output = session_solves.get_solve_number(solve_number).time_output()
+		text = font.render(f'No.{solve_number}: {solve_output}', 1, draw_info.WHITE)
+		draw_info.screen.blit(text, (int(draw_info.width/2 - text.get_width()/2), 65+title.get_height() + 41*(num-scroll)))
+	font = draw_info.new_font(30)
+	instruction = font.render('(use arrow keys to scroll up and down solve list) ', 1, draw_info.LIGHT_BLUE)
+	draw_info.screen.blit(instruction, (int(draw_info.width/2 - instruction.get_width()/2), 7))
+	instruction = font.render('(press B to go back to solving) ', 1, draw_info.LIGHT_BLUE)
+	draw_info.screen.blit(instruction, (int(draw_info.width/2 - instruction.get_width()/2), 33))
 	pygame.display.update()
 
 def display_end_of_sessions_instructions(draw_info):
@@ -331,7 +356,8 @@ class LocationInApp(Enum):
 	solving = 3
 	assigning_penalties = 4
 	manually_adding_time = 5
-	end_of_session = 6
+	viewing_previous_solves = 6
+	end_of_session = 7
 
 def main():
 	scramble = []
@@ -354,12 +380,10 @@ def main():
 				if event.type == pygame.QUIT:
 					exit()
 					pygame.quit()
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
 					display_commands(draw_info)
 				if event.type == pygame.KEYUP and event.key == pygame.K_c:
 					display_start_menu(draw_info, puzzle)
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_s: #start scrambling and solving
 					scramble = display_new_scramble(draw_info, puzzle)
 					display_ready_label(draw_info, draw_info.WHITE)
@@ -367,13 +391,11 @@ def main():
 					display_current_averages(draw_info, session_solves)
 					location_in_app = LocationInApp.scrambling
 
-
 		elif location_in_app == LocationInApp.scrambling:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					exit()
 					pygame.quit()
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
 					display_commands(draw_info)
 				if event.type == pygame.KEYUP and event.key == pygame.K_c:
@@ -381,13 +403,15 @@ def main():
 					display_ready_label(draw_info, draw_info.WHITE)
 					display_solve_count(draw_info, session_solves)
 					display_current_averages(draw_info, session_solves)
-
-				if event.type == pygame.KEYDOWN and event.key == pygame.K_s: #command to generate new scrambe
+				if event.type == pygame.KEYDOWN and event.key == pygame.K_v:
+					scroll = 0
+					display_previous_solves(draw_info, session_solves, scroll)
+					location_in_app = LocationInApp.viewing_previous_solves
+				if event.type == pygame.KEYDOWN and event.key == pygame.K_s: #command to generate new scramble
 					scramble = display_new_scramble(draw_info, puzzle)
 					display_ready_label(draw_info, draw_info.WHITE)
 					display_solve_count(draw_info, session_solves)
 					display_current_averages(draw_info, session_solves)
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
 					display_ready_label(draw_info, draw_info.YELLOW)
 					begin = perf_counter()
@@ -398,8 +422,6 @@ def main():
 					else:
 						start_timer = perf_counter()
 						location_in_app = LocationInApp.solving
-						display_solving(draw_info)
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_END:
 					display_end_of_sessions_instructions(draw_info)
 					scroll = 0
@@ -408,13 +430,12 @@ def main():
 					generate_plot(session_solves)
 					location_in_app = LocationInApp.end_of_session
 
-
 		elif location_in_app == LocationInApp.solving:
+			display_solving(draw_info, perf_counter()-start_timer)
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					exit()
 					pygame.quit()
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
 					display_ready_label(draw_info, draw_info.YELLOW)
 					end_timer = perf_counter()
@@ -426,13 +447,11 @@ def main():
 					penalty_added = False
 					location_in_app = LocationInApp.assigning_penalties
 
-
 		elif location_in_app == LocationInApp.assigning_penalties:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					exit()
 					pygame.quit()
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_c:
 					display_commands(draw_info)
 				if event.type == pygame.KEYUP and event.key == pygame.K_c:
@@ -441,7 +460,6 @@ def main():
 						display_ps(draw_info)
 					else:
 						display_proceed(draw_info)
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_2 and not penalty_added:
 					solve.plus2()
 					display_solve_time(draw_info, solve)
@@ -463,14 +481,12 @@ def main():
 					display_time_input(draw_info, user_input)
 					user_input = ''
 					penalty_added = True
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
 					scramble = display_new_scramble(draw_info, puzzle)
 					display_ready_label(draw_info, draw_info.WHITE)
 					display_solve_count(draw_info, session_solves)
 					display_current_averages(draw_info, session_solves)
 					location_in_app = LocationInApp.scrambling
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_END:
 					display_end_of_sessions_instructions(draw_info)
 					scroll = 0
@@ -479,13 +495,11 @@ def main():
 					generate_plot(session_solves)
 					location_in_app = LocationInApp.end_of_session
 
-
 		elif location_in_app == LocationInApp.manually_adding_time:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					exit()
 					pygame.quit()
-
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_RETURN:
 						try:
@@ -495,7 +509,6 @@ def main():
 							else:
 								solve.set_time(solve_time)
 								display_solve_time(draw_info, solve)
-
 								location_in_app = LocationInApp.assigning_penalties
 						except ValueError:
 							display_invalid_input(draw_info, "enter time in this format: '00.000'")
@@ -512,20 +525,35 @@ def main():
 						user_input += event.unicode
 						display_time_input(draw_info, user_input)
 
+		elif location_in_app == LocationInApp.viewing_previous_solves:
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					exit()
+					pygame.quit()
+				if event.type == pygame.KEYDOWN and event.key == pygame.K_UP and scroll > 0:
+					scroll -= 1
+					display_previous_solves(draw_info, session_solves, scroll)
+				if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN and scroll < session_solves.get_number_of_solves()-12:
+					scroll += 1
+					display_previous_solves(draw_info, session_solves, scroll)
+				if event.type == pygame.KEYUP and event.key == pygame.K_b:
+					location_in_app = LocationInApp.scrambling
+					display_same_scramble(draw_info, puzzle, scramble)
+					display_ready_label(draw_info, draw_info.WHITE)
+					display_solve_count(draw_info, session_solves)
+					display_current_averages(draw_info, session_solves)
 
 		elif location_in_app == LocationInApp.end_of_session:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					exit()
 					pygame.quit()
-
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_UP and scroll > 0:
 					scroll -= 1
 					display_solve_list(draw_info, session_solves, scroll)
 				if event.type == pygame.KEYDOWN and event.key == pygame.K_DOWN and scroll < session_solves.get_number_of_solves()-12:
 					scroll += 1
 					display_solve_list(draw_info, session_solves, scroll)
-
 				if event.type == pygame.KEYUP and event.key == pygame.K_n:
 					scramble = []
 					solve = None
