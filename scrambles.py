@@ -41,7 +41,7 @@ def _3x3():
         'z':{
             'f':("F2","F","F'"),
             'b':("B2","B","B'")
-}
+            }
         }
     scramble = []
     while len(scramble) < SCRAMBLE_LENGTH:
