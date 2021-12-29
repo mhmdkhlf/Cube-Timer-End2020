@@ -65,12 +65,15 @@ class Solve:
     def time_output(self):
         if not self.is_finished():
             return 'DNF'
-        sec = timedelta(seconds=self.get_time())
-        d = datetime(1,1,1) + sec
-        if d.minute==0:
-            time = "%d.%.3d" % (d.second,d.microsecond/1000)
-        else:
-            time = "%d:%.2d.%.3d" % (d.minute, d.second,d.microsecond/1000)
+        time = to_time_format(self.get_time())
         if self.penalty == '+2':
             return f'({time})+'
         return time
+
+
+def to_time_format(seconds):
+    sec = timedelta(seconds=seconds)
+    d = datetime(1,1,1) + sec
+    if d.minute == 0:
+        return '%d.%.3d' % (d.second, d.microsecond/1000)
+    return '%d:%.2d.%.3d' % (d.minute, d.second, d.microsecond/1000)
