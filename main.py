@@ -4,7 +4,7 @@ import os
 import matplotlib.pyplot as plt
 from enum import Enum
 import pygame
-from solve import Solve
+from solve import Solve, to_time_format
 from puzzle_select import PuzzleSelector
 from scrambles import generate_scramble
 from session_solves import SessionSolves
@@ -33,7 +33,6 @@ class DrawInformation:
 		self.height = height
 		self.screen = pygame.display.set_mode((width, height))
 		pygame.display.set_caption("My Rubik's Cube Timer App")
-
 
 def display_start_menu(draw_info, puzzle):
 	draw_info.screen.fill(draw_info.BLACK)
@@ -196,10 +195,10 @@ def display_same_scramble(draw_info, puzzle, scrmbl):
 	elif puzzle == 'megaminx':
 		display_megaminx_scramble(draw_info, scramble=scrmbl)
 
-def display_solving(draw_info, time):
+def display_timer(draw_info, time):
     draw_info.screen.fill(draw_info.BLACK)
     font = draw_info.new_font(140)
-    text = font.render('%.3f' % time, 1, draw_info.GREEN)
+    text = font.render(to_time_format(time), 1, draw_info.GREEN)
     draw_info.screen.blit(text, (int(draw_info.width/2 - text.get_width()/2), int(draw_info.height/2 - text.get_height()/2)))
     pygame.display.update()
 
@@ -431,7 +430,7 @@ def main():
 					location_in_app = LocationInApp.end_of_session
 
 		elif location_in_app == LocationInApp.solving:
-			display_solving(draw_info, perf_counter()-start_timer)
+			display_timer(draw_info, perf_counter()-start_timer)
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					exit()
@@ -563,6 +562,5 @@ def main():
 					location_in_app = LocationInApp.start_menu
 					display_start_menu(draw_info, puzzle)
 
-					
 if __name__ == '__main__':
     main()
