@@ -1,4 +1,4 @@
-from solve import Solve
+from solve import Solve, to_time_format
 
 class SessionSolves:
     def __init__(self):
@@ -19,20 +19,7 @@ class SessionSolves:
 
     def get_number_of_solves(self):
         return len(self.solves)
-    """
-    def get_number_of_timed_solves(self):
-        number_of_timed_solves = 0
-        for solve in self.solves:
-            if solve.is_finished():
-                number_of_timed_solves += 1
-        return number_of_timed_solves
 
-    def get_list_of_timed_solves(self):
-        for solve in self.solves:
-            if solve.is_finished():
-                number_of_timed_solves += 1
-        return number_of_timed_solves
-    """
     def get_best_solve(self, of=None):
         if self.get_number_of_solves() == 0:
             return None
@@ -61,7 +48,7 @@ class SessionSolves:
             if not solve.is_finished():
                 return 'DNF'
             sum_times += solve.get_time()
-        return format(sum_times / (of - 2), '.3f')
+        return to_time_format(sum_times / (of - 2))
 
     def mean(self):
         finished_solves = [solve for solve in self.solves if solve.is_finished()]
@@ -70,4 +57,4 @@ class SessionSolves:
         sum_times = 0
         for solve in finished_solves:
             sum_times += solve.get_time()
-        return format(sum_times / len(finished_solves), '.3f')
+        return to_time_format(sum_times / len(finished_solves))
